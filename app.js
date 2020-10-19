@@ -1,6 +1,7 @@
 'user strict'
 
-var items = [
+
+var products = [
     "bag",
     "banana",
     "bathroom",
@@ -21,13 +22,34 @@ var items = [
     "usb",
     "water-can",
     "wine-glass",
-]
+];
+var path = [
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "jpg",
+    "png",
+    "jpg",
+    "jpg",
+    "gif",
+    "jpg",
+    "jpg",
+];
 
-
-//var mall = [];
-var leftImage = document.getElementById("leftImage");
-var centerImage = document.querySelector("#centerImage");
-var rightImage = document.querySelector("#rightImage");
+var leftImg = document.getElementById('leftImage');
+var centerImg = document.getElementById('centerImage');
+var rightImg = document.getElementById('rightImage');
+var imageSection = document.getElementById('imageSection');
 
 var leftItems, centerProducts, rightProducts;
 var random1 = 0, random2 = 0, random3 = 0;
@@ -35,52 +57,125 @@ var round = 0;
 var sessionLength = 25;
 var sessionEnd = false;
 
+
+//var malls = []; // array for selling items
 Mall.all = [];
 
-function Mall(mItems) {
+function Mall(mItems, imagePath) {
     this.mallItem = mItems;
-    this.mItems = `images/${mItems}.jpg || images/${mItems}.png || images/${mItems}.gif`;
+    this.imagePath = imagePath;
     this.views = 0;
     this.clicks = 0;
-
     Mall.all.push(this);
 }
+
 function render(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 
 }
+
 function createItem() {
-    for (var i = 0; i < items.length; i++) {
-        new Mall(items[i], this.mItems);
+    for (var i = 0; i < products.length; i++) {
+        new Mall(products[i], path[i]);
     }
 }
+
 function randomRender() {
-    random1 = 0
-    random2 = 0
-    random3 = 0
     
-    while(random1 == random2 || random1==random3 || random2==random3){
-        random1=render(0,items.length -1);
-        random2=render(0,items.length -1);
-        random3=render(0,items.length -1);
-    }
+//var randomNew = [random1,random2,random3]
 
-leftItems=Mall.all[random1];
-centerProducts=Mall.all[random2];
-rightProducts=Mall.all[random3];
+// do{
+//     random1 = render(0, products.length - 1);
+// }while(randomNew.includes(random1))
+// randomNew.push(random1);
+
+// do{
+//     random2 = render(0, products.length - 1);
+// }while(randomNew.includes(random2))
+// randomNew.push(random2);
+// do{
+//     random3 = render(0, products.length - 1);
+// }while(randomNew.includes(random3))
+// randomNew.push(random3);
+    do {
+        random1 = render(0, products.length - 1);
+        random2 = render(0, products.length - 1);
+        random3 = render(0, products.length - 1);
+    } while (random1 == random2 || random1 == random3 || random2 == random3);
+
+    
+    leftImg.src = `images/${products[random1]}.${path[random1]}`;
+    centerImg.src = `images/${products[random2]}.${path[random2]}`;
+    rightImg.src = `images/${products[random3]}.${path[random3]}`;
+
+    leftItems = Mall.all[random1];
+    centerProducts = Mall.all[random2];
+    rightProducts = Mall.all[random3];
 }
-
-function allResults(){
-    if(sessionEnd == false){
-        var ul=document.getElementById('Results');
-        for (let i=0;i < Mall.all.length;i++){
-            var li=document.createElement('li');
-            li.textContent=`${Mall.all[i].mallItem} had ${Mall.all[i].clicks} votes, and was seen ${Mall.all[i].views} times.`
+function allResults() {
+    if (sessionEnd == false) {
+        var ul = document.getElementById('finalResults');
+        for (let i = 0; i < Mall.all.length; i++) {
+            var li = document.createElement('li');
+            li.textContent = `${Mall.all[i].mallItem} had ${Mall.all[i].clicks} votes, and was seen ${Mall.all[i].views} times.`
             ul.append(li);
         }
         sessionEnd = true;
     }
 }
+
+
+
+function fillData() {
+    totalClicks = [];
+    totalViews = [];
+    fillDataSet = [];
+
+    for (var i = 0; i < Mall.all.length; i++) {
+        totalClicks.push(Mall.all[i].clicks);
+        totalViews.push(Mall.all[i].views);
+        fillDataSet.push(Mall.all[i].views * Mall.all[i].clicks);
+
+    }
+
+
+}
+function renderChart() {
+    fillData();
+
+
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: products,
+            label: '# of Votes',
+            datasets: [
+                {
+                    label: 'clicks',
+                    backgroundColor: 'rgb(10,90,80)',
+                    borderColor: 'rgb(44,43,66)',
+                    data: totalClicks
+
+
+                },
+                {
+                    label: 'views',
+                    backgroundColor: 'rgb(101,140,220)',
+                    borderColor: 'rgb(55,33,22)',
+                    data: totalViews
+
+
+                }
+            ],
+
+        }
+    }
+
+    );
+}
+
 function handleClick(event) {
     if (round < sessionLength) {
         leftItems.views += 1;
@@ -102,28 +197,8 @@ function handleClick(event) {
             randomRender();
         } else { }
     }
-    else {allResults();} 
+    else { allResults();renderChart(); }
 }
-image1.addEventListener('click', handleClick);
+imageSection.addEventListener('click', handleClick);
 createItem();
 randomRender();
-//for (var i = 0; i < items.length; i++); {
-    //Mall.all.push(items[i]);
-
-//}
-
-leftImage.setAttribute('src', `images/${items[0]}.jpg`);
-leftImage.setAttribute('alt', items[0]);
-leftImage.setAttribute('title', items[0]);
-
-centerImage.setAttribute('src', `images/${items[1]}.jpg`);
-centerImage.setAttribute('alt', items[1]);
-centerImage.setAttribute('title', items[1]);
-
-rightImage.setAttribute('src', `images/${items[2]}.jpg`);
-rightImage.setAttribute('alt', items[2]);
-rightImage.setAttribute('title', items[2]);
-
-
-
-
