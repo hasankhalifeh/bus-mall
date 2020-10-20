@@ -58,6 +58,8 @@ var sessionLength = 25;
 var sessionEnd = false;
 
 
+
+
 //var malls = []; // array for selling items
 Mall.all = [];
 
@@ -81,29 +83,29 @@ function createItem() {
 }
 
 function randomRender() {
-    
-//var randomNew = [random1,random2,random3]
 
-// do{
-//     random1 = render(0, products.length - 1);
-// }while(randomNew.includes(random1))
-// randomNew.push(random1);
+    var randomNew = [random1, random2, random3]
 
-// do{
-//     random2 = render(0, products.length - 1);
-// }while(randomNew.includes(random2))
-// randomNew.push(random2);
-// do{
-//     random3 = render(0, products.length - 1);
-// }while(randomNew.includes(random3))
-// randomNew.push(random3);
     do {
         random1 = render(0, products.length - 1);
-        random2 = render(0, products.length - 1);
-        random3 = render(0, products.length - 1);
-    } while (random1 == random2 || random1 == random3 || random2 == random3);
+    } while (randomNew.includes(random1))
+    randomNew.push(random1);
 
-    
+    do {
+        random2 = render(0, products.length - 1);
+    } while (randomNew.includes(random2))
+    randomNew.push(random2);
+    do {
+        random3 = render(0, products.length - 1);
+    } while (randomNew.includes(random3))
+    randomNew.push(random3);
+    // do {
+    //     random1 = render(0, products.length - 1);
+    //     random2 = render(0, products.length - 1);
+    //     random3 = render(0, products.length - 1);
+    // } while (random1 == random2 || random1 == random3 || random2 == random3);
+
+
     leftImg.src = `images/${products[random1]}.${path[random1]}`;
     centerImg.src = `images/${products[random2]}.${path[random2]}`;
     rightImg.src = `images/${products[random3]}.${path[random3]}`;
@@ -197,8 +199,41 @@ function handleClick(event) {
             randomRender();
         } else { }
     }
-    else { allResults();renderChart(); }
+    else { allResults(); renderChart(); }
 }
 imageSection.addEventListener('click', handleClick);
 createItem();
 randomRender();
+sendOrderLocalStorage();
+
+
+function sendOrderLocalStorage(){
+    var totalClicksArray= JSON.stringify(Mall.all);
+    var totalProductsArray= JSON.stringify(Mall.all);
+    localStorage.setItem('allProducts',totalProductsArray);
+    localStorage.setItem('allClicks',totalClicksArray);
+}
+//console.log(totalClicksArray,totalProductsArray);
+
+function getOrderToLocalStorage(){
+    var productsArray = localStorage.getItem('allProducts');
+    var clicksArry = localStorage.getItem('allClicks');
+    localStorage.getItem('allProducts',productsArray);
+    localStorage.getItem('allClicks',clicksArry);
+   
+    // if (randomRender){
+    //     Mall.all = JSON.parse(randomRender);
+    //     randomRender();
+    // }
+    if (productsArray){
+        Mall.all = JSON.parse(productsArray.getItem('allProducts'))
+        randomRender();
+        
+    }
+}
+
+// if(localStorage.getItem('allClicks')){
+//     Mall.all=[];
+//     Mall.all= JSON.parse(localStorage.getItem('allClicks'))
+// }
+getOrderToLocalStorage();
